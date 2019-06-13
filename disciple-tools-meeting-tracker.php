@@ -18,7 +18,7 @@
 
 /**
  * Refactoring (renaming) this plugin as your own:
- * 1. Refactor all occurrences of the name DT_Starter, dt_starter, dt-starter and Starter Plugin with you're own
+ * 1. Refactor all occurrences of the name DT_Starter, dt_starter, dt-meeting-tracker and Starter Plugin with you're own
  * name for the `disciple-tools-starter-plugin.php and menu-and-tabs.php files.
  * 2. Update the README.md and LICENSE
  * 3. Update the default.pot file if you intend to make your plugin multilingual. Use a tool like POEdit
@@ -164,8 +164,8 @@ class DT_Meeting_Tracker {
         $this->version             = '0.1';
 
         // sample rest api class
-        require_once( 'includes/rest-api.php' );
-        DT_Meeting_Tracker_Endpoints::instance();
+        // require_once( 'includes/rest-api.php' );
+        // DT_Meeting_Tracker_Endpoints::instance();
     }
 
     /**
@@ -228,7 +228,7 @@ class DT_Meeting_Tracker {
      * @return void
      */
     public static function deactivation() {
-        delete_option( 'dismissed-dt-starter' );
+        delete_option( 'dismissed-dt-meeting-tracker' );
     }
 
     /**
@@ -304,18 +304,18 @@ function DT_Meeting_Tracker_hook_admin_notice() {
         $message .= sprintf( esc_html__( 'Current Disciple Tools version: %1$s, required version: %2$s', 'DT_Meeting_Tracker' ), esc_html( $current_version ), esc_html( $dt_starter_required_dt_theme_version ) );
     }
     // Check if it's been dismissed...
-    if ( ! get_option( 'dismissed-dt-starter', false ) ) { ?>
-        <div class="notice notice-error notice-dt-starter is-dismissible" data-notice="dt-starter">
+    if ( ! get_option( 'dismissed-dt-meeting-tracker', false ) ) { ?>
+        <div class="notice notice-error notice-dt-meeting-tracker is-dismissible" data-notice="dt-meeting-tracker">
             <p><?php echo esc_html( $message );?></p>
         </div>
         <script>
             jQuery(function($) {
-                $( document ).on( 'click', '.notice-dt-starter .notice-dismiss', function () {
+                $( document ).on( 'click', '.notice-dt-meeting-tracker .notice-dismiss', function () {
                     $.ajax( ajaxurl, {
                         type: 'POST',
                         data: {
                             action: 'dismissed_notice_handler',
-                            type: 'dt-starter',
+                            type: 'dt-meeting-tracker',
                             security: '<?php echo esc_html( wp_create_nonce( 'wp_rest_dismiss' ) ) ?>'
                         }
                     })
