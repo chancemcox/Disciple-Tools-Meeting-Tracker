@@ -4,7 +4,7 @@
  */
 
 
-class DT_Meeting_Tracker_Endpoints
+class DT_Meetings_Plugin_Endpoints
 {
     public $permissions = [ 'view_any_contacts', 'view_project_metrics' ];
 

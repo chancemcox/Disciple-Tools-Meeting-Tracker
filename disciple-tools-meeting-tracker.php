@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: Disciple Tools - Meeting Tracker
- * Plugin URI: https://github.com/chancemcox/Disciple-Tools-Meeting-Tracker
- * Description: Disciple Tools - Meeting Tracker, Track meetings with contacts.
- * Version:  0.1
+ * Plugin Name: Meeting Tracker
+ * Plugin URI: https://github.com/DiscipleTools/disciple-tools-starter-plugin
+ * Description: Disciple Tools - Meeting Tracker
+ * Version:  0.1.0
  * Author URI: https://github.com/DiscipleTools
- * GitHub Plugin URI: https://github.com/chancemcox/Disciple-Tools-Meeting-Tracker
+ * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-starter-plugin
  * Requires at least: 4.7.0
  * (Requires 4.7+ because of the integration of the REST API at 4.7 and the security requirements of this milestone version.)
  * Tested up to: 4.9
@@ -16,14 +16,20 @@
  *          https://www.gnu.org/licenses/gpl-2.0.html
  */
 
+/*******************************************************************
+ * Using the Starter Plugin
+ * The Disciple Tools starter plugin is intended to accelerate integrations and extensions to the Disciple Tools system.
+ * This basic plugin starter has some of the basic elements to quickly launch and extension project in the pattern of
+ * the Disciple Tools system.
+ */
+
 /**
  * Refactoring (renaming) this plugin as your own:
- * 1. Refactor all occurrences of the name DT_Starter, dt_starter, dt-meeting-tracker and Starter Plugin with you're own
+ * 1. Refactor all occurrences of the name DT_Starter, dt_starter, dt-meetings and Starter Plugin with you're own
  * name for the `disciple-tools-starter-plugin.php and menu-and-tabs.php files.
  * 2. Update the README.md and LICENSE
  * 3. Update the default.pot file if you intend to make your plugin multilingual. Use a tool like POEdit
  * 4. Change the translation domain to in the phpcs.xml your plugin's domain: @todo
- * 5 Replace 'sample' in this and the rest-api.php files
  */
 
 /**
@@ -40,24 +46,25 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
-$dt_starter_required_dt_theme_version = '0.19.0';
+$dt_meetings_required_dt_theme_version = '0.19.0';
 
 /**
- * Gets the instance of the `DT_Meeting_Tracker` class.
+ * Gets the instance of the `DT_Meetings_Plugin` class.
  *
  * @since  0.1
  * @access public
  * @return object
  */
-function DT_Meeting_Tracker() {
-    global $dt_starter_required_dt_theme_version;
+function dt_meetings_plugin() {
+    global $dt_meetings_required_dt_theme_version;
     $wp_theme = wp_get_theme();
     $version = $wp_theme->version;
     /*
      * Check if the Disciple.Tools theme is loaded and is the latest required version
      */
-    if ( 'disciple-tools-theme' !== $wp_theme->get_template() || $version < $dt_starter_required_dt_theme_version ) {
-        add_action( 'admin_notices', 'DT_Meeting_Tracker_hook_admin_notice' );
+    $is_theme_dt = strpos( $wp_theme->get_template(), "disciple-tools-theme" ) !== false || $wp_theme->name === "Disciple Tools";
+    if ( !$is_theme_dt || version_compare( $version, $dt_meetings_required_dt_theme_version, "<" ) ) {
+        add_action( 'admin_notices', 'dt_meetings_plugin_hook_admin_notice' );
         add_action( 'wp_ajax_dismissed_notice_handler', 'dt_hook_ajax_notice_handler' );
         return new WP_Error( 'current_theme_not_dt', 'Disciple Tools Theme not active or not latest version.' );
     }
@@ -70,12 +77,12 @@ function DT_Meeting_Tracker() {
     /*
      * Don't load the plugin on every rest request. Only those with the metrics namespace
      */
-    $is_rest = dt_is_rest();
-    if ( !$is_rest || strpos( dt_get_url_path(), 'sample' ) != false ){
-        return DT_Meeting_Tracker::get_instance();
-    }
+//    $is_rest = dt_is_rest();
+//    if ( !$is_rest || strpos( dt_get_url_path(), 'sample' ) != false ){
+//    }
+        return DT_Meetings_Plugin::get_instance();
 }
-add_action( 'plugins_loaded', 'DT_Meeting_Tracker' );
+add_action( 'plugins_loaded', 'dt_meetings_plugin' );
 
 /**
  * Singleton class for setting up the plugin.
@@ -83,7 +90,7 @@ add_action( 'plugins_loaded', 'DT_Meeting_Tracker' );
  * @since  0.1
  * @access public
  */
-class DT_Meeting_Tracker {
+class DT_Meetings_Plugin {
 
     /**
      * Declares public variables
@@ -111,7 +118,7 @@ class DT_Meeting_Tracker {
         static $instance = null;
 
         if ( is_null( $instance ) ) {
-            $instance = new DT_Meeting_Tracker();
+            $instance = new DT_Meetings_Plugin();
             $instance->setup();
             $instance->includes();
             $instance->setup_actions();
@@ -138,6 +145,8 @@ class DT_Meeting_Tracker {
      */
     private function includes() {
         require_once( 'includes/admin/admin-menu-and-tabs.php' );
+        require_once( 'includes/meetings.php' );
+        new DT_Meetings();
     }
 
     /**
@@ -160,12 +169,12 @@ class DT_Meeting_Tracker {
         $this->img_uri      = trailingslashit( $this->dir_uri . 'img' );
 
         // Admin and settings variables
-        $this->token             = 'DT_Meeting_Tracker';
+        $this->token             = 'dt_meetings_plugin';
         $this->version             = '0.1';
 
         // sample rest api class
         // require_once( 'includes/rest-api.php' );
-        // DT_Meeting_Tracker_Endpoints::instance();
+        // DT_Meetings_Plugin_Endpoints::instance();
     }
 
     /**
@@ -228,7 +237,7 @@ class DT_Meeting_Tracker {
      * @return void
      */
     public static function deactivation() {
-        delete_option( 'dismissed-dt-meeting-tracker' );
+        delete_option( 'dismissed-dt-meetings' );
     }
 
     /**
@@ -239,7 +248,7 @@ class DT_Meeting_Tracker {
      * @return void
      */
     public function i18n() {
-        load_plugin_textdomain( 'DT_Meeting_Tracker', false, trailingslashit( dirname( plugin_basename( __FILE__ ) ) ). 'languages' );
+        load_plugin_textdomain( 'dt_meetings_plugin', false, trailingslashit( dirname( plugin_basename( __FILE__ ) ) ). 'languages' );
     }
 
     /**
@@ -250,7 +259,7 @@ class DT_Meeting_Tracker {
      * @return string
      */
     public function __toString() {
-        return 'DT_Meeting_Tracker';
+        return 'dt_meetings_plugin';
     }
 
     /**
@@ -261,7 +270,7 @@ class DT_Meeting_Tracker {
      * @return void
      */
     public function __clone() {
-        _doing_it_wrong( __FUNCTION__, esc_html__( 'Whoah, partner!', 'DT_Meeting_Tracker' ), '0.1' );
+        _doing_it_wrong( __FUNCTION__, esc_html__( 'Whoah, partner!', 'dt_meetings_plugin' ), '0.1' );
     }
 
     /**
@@ -272,7 +281,7 @@ class DT_Meeting_Tracker {
      * @return void
      */
     public function __wakeup() {
-        _doing_it_wrong( __FUNCTION__, esc_html__( 'Whoah, partner!', 'DT_Meeting_Tracker' ), '0.1' );
+        _doing_it_wrong( __FUNCTION__, esc_html__( 'Whoah, partner!', 'dt_meetings_plugin' ), '0.1' );
     }
 
     /**
@@ -284,7 +293,7 @@ class DT_Meeting_Tracker {
      */
     public function __call( $method = '', $args = array() ) {
         // @codingStandardsIgnoreLine
-        _doing_it_wrong( "DT_Meeting_Tracker::{$method}", esc_html__( 'Method does not exist.', 'DT_Meeting_Tracker' ), '0.1' );
+        _doing_it_wrong( "dt_meetings_plugin::{$method}", esc_html__( 'Method does not exist.', 'dt_meetings_plugin' ), '0.1' );
         unset( $method, $args );
         return null;
     }
@@ -292,30 +301,30 @@ class DT_Meeting_Tracker {
 // end main plugin class
 
 // Register activation hook.
-register_activation_hook( __FILE__, [ 'DT_Meeting_Tracker', 'activation' ] );
-register_deactivation_hook( __FILE__, [ 'DT_Meeting_Tracker', 'deactivation' ] );
+register_activation_hook( __FILE__, [ 'DT_Meetings_Plugin', 'activation' ] );
+register_deactivation_hook( __FILE__, [ 'DT_Meetings_Plugin', 'deactivation' ] );
 
-function DT_Meeting_Tracker_hook_admin_notice() {
-    global $dt_starter_required_dt_theme_version;
+function dt_meetings_plugin_hook_admin_notice() {
+    global $dt_meetings_required_dt_theme_version;
     $wp_theme = wp_get_theme();
     $current_version = $wp_theme->version;
-    $message = __( "'Disciple Tools - Starter Plugin' plugin requires 'Disciple Tools' theme to work. Please activate 'Disciple Tools' theme or make sure it is latest version.", "DT_Meeting_Tracker" );
+    $message = __( "'Disciple Tools - Starter Plugin' plugin requires 'Disciple Tools' theme to work. Please activate 'Disciple Tools' theme or make sure it is latest version.", "dt_meetings_plugin" );
     if ( $wp_theme->get_template() === "disciple-tools-theme" ){
-        $message .= sprintf( esc_html__( 'Current Disciple Tools version: %1$s, required version: %2$s', 'DT_Meeting_Tracker' ), esc_html( $current_version ), esc_html( $dt_starter_required_dt_theme_version ) );
+        $message .= sprintf( esc_html__( 'Current Disciple Tools version: %1$s, required version: %2$s', 'dt_meetings_plugin' ), esc_html( $current_version ), esc_html( $dt_meetings_required_dt_theme_version ) );
     }
     // Check if it's been dismissed...
-    if ( ! get_option( 'dismissed-dt-meeting-tracker', false ) ) { ?>
-        <div class="notice notice-error notice-dt-meeting-tracker is-dismissible" data-notice="dt-meeting-tracker">
+    if ( ! get_option( 'dismissed-dt-meetings', false ) ) { ?>
+        <div class="notice notice-error notice-dt-meetings is-dismissible" data-notice="dt-meetings">
             <p><?php echo esc_html( $message );?></p>
         </div>
         <script>
             jQuery(function($) {
-                $( document ).on( 'click', '.notice-dt-meeting-tracker .notice-dismiss', function () {
+                $( document ).on( 'click', '.notice-dt-meetings .notice-dismiss', function () {
                     $.ajax( ajaxurl, {
                         type: 'POST',
                         data: {
                             action: 'dismissed_notice_handler',
-                            type: 'dt-meeting-tracker',
+                            type: 'dt-meetings',
                             security: '<?php echo esc_html( wp_create_nonce( 'wp_rest_dismiss' ) ) ?>'
                         }
                     })
