@@ -308,10 +308,10 @@ function dt_meetings_plugin_hook_admin_notice() {
     global $dt_meetings_required_dt_theme_version;
     $wp_theme = wp_get_theme();
     $current_version = $wp_theme->version;
-    $message = __( "'Disciple Tools - Starter Plugin' plugin requires 'Disciple Tools' theme to work. Please activate 'Disciple Tools' theme or make sure it is latest version.", "dt_meetings_plugin" );
-    if ( $wp_theme->get_template() === "disciple-tools-theme" ){
-        $message .= sprintf( esc_html__( 'Current Disciple Tools version: %1$s, required version: %2$s', 'dt_meetings_plugin' ), esc_html( $current_version ), esc_html( $dt_meetings_required_dt_theme_version ) );
-    }
+    // $message = __( "'Disciple Tools - Starter Plugin' plugin requires 'Disciple Tools' theme to work. Please activate 'Disciple Tools' theme or make sure it is latest version.", "dt_meetings_plugin" );
+    // if ( $wp_theme->get_template() === "disciple-tools-theme" ){
+    //     $message .= sprintf( esc_html__( 'Current Disciple Tools version: %1$s, required version: %2$s', 'dt_meetings_plugin' ), esc_html( $current_version ), esc_html( $dt_meetings_required_dt_theme_version ) );
+    // }
     // Check if it's been dismissed...
     if ( ! get_option( 'dismissed-dt-meetings', false ) ) { ?>
         <div class="notice notice-error notice-dt-meetings is-dismissible" data-notice="dt-meetings">
