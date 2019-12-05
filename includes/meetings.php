@@ -16,12 +16,26 @@ class DT_Meetings{
 
         add_filter( 'dt_custom_fields_settings', [ $this, 'dt_custom_fields_settings' ], 10, 2 );
         add_filter( 'dt_details_additional_section_ids', [ $this, 'dt_details_additional_section_ids' ], 10, 2 );
+        add_action( 'dt_post_status_bar', [ $this, 'post_status_bar' ]);
     }
 
+    public function post_status_bar(){
+        $post_type = get_post_type();
+        if ($post_type === "meetings"){
+
+          $post_settings = apply_filters( "dt_get_post_type_settings", [], $post_type );
+          $dt_post = DT_Posts::get_post( $post_type, get_the_ID() );
+          render_field_for_display( 'description', $post_settings["fields"], $dt_post )
+        ?>
+        <?php
+        }
+    }
 
     public function after_setup_theme(){
         if ( class_exists( 'Disciple_Tools_Post_Type_Template' )) {
-            new Disciple_Tools_Post_Type_Template( "meetings", 'Meetings', 'Meetings' );
+            new Disciple_Tools_Post_Type_Template( "meetings", 'Meeting', 'Meetings' );
+            // url and post type , singular tab , tab
+            // string $post_type, string $singular, string $plural
         }
     }
 
@@ -33,12 +47,18 @@ class DT_Meetings{
                 'default' => '',
                 'show_in_table' => true
             ];
-            $fields['group_count'] = [
-                'name' => "Number of groups",
+            $fields['description'] = [
+                'name' => "Description",
                 'type' => 'text',
                 'default' => '',
                 'show_in_table' => true
             ];
+            // $fields['group_count'] = [
+            //     'name' => "Number of groups",
+            //     'type' => 'text',
+            //     'default' => '',
+            //     'show_in_table' => true
+            // ];
             $fields['contacts'] = [
                 'name' => "Contacts Who Attended",
                 'type' => 'connection',
@@ -52,23 +72,23 @@ class DT_Meetings{
               'default' => '',
               'show_in_table' => true
             ];
-            $fields['groups'] = [
-                'name' => "Groups",
-                'type' => 'connection',
-                "p2p_direction" => "from",
-                "p2p_key" => "meetings_to_groups",
-                'p2p_listing' => 'groups'
-            ];
+            // $fields['groups'] = [
+            //     'name' => "Groups",
+            //     'type' => 'connection',
+            //     "p2p_direction" => "from",
+            //     "p2p_key" => "meetings_to_groups",
+            //     'p2p_listing' => 'groups'
+            // ];
         }
-        if ( $post_type === 'groups' ){
-            $fields['meetings'] = [
-                'name' => "Meetings",
-                'type' => 'connection',
-                "p2p_direction" => "to",
-                "p2p_key" => "meetings_to_groups",
-                'p2p_listing' => 'meetings'
-            ];
-        }
+        // if ( $post_type === 'groups' ){
+        //     $fields['meetings'] = [
+        //         'name' => "Meetings",
+        //         'type' => 'connection',
+        //         "p2p_direction" => "to",
+        //         "p2p_key" => "meetings_to_groups",
+        //         'p2p_listing' => 'meetings'
+        //     ];
+        // }
         if ( $post_type === 'contacts' ){
             $fields['meetings'] = [
                 'name' => "Meetings",
@@ -87,18 +107,18 @@ class DT_Meetings{
             'from' => 'meetings',
             'to' => 'contacts'
         ]);
-        p2p_register_connection_type([
-            'name' => 'meetings_to_groups',
-            'from' => 'meetings',
-            'to' => 'groups'
-        ]);
+        // p2p_register_connection_type([
+        //     'name' => 'meetings_to_groups',
+        //     'from' => 'meetings',
+        //     'to' => 'groups'
+        // ]);
     }
 
     public function dt_details_additional_section_ids( $sections, $post_type = "" ){
         if ( $post_type === "meetings"){
             $sections[] = "meeting_date";
             $sections[] = 'contacts';
-            $sections[] = 'groups';
+            // $sections[] = 'groups';
 
         }
 
@@ -131,11 +151,9 @@ class DT_Meetings{
           </style>
 
           <label class="section-header">
+              <!-- meeting Date tile -->
               <?php esc_html_e( 'Date', 'disciple_tools' )?>
           </label>
-          <!-- <div class="section-subheader">
-              <?php esc_html_e( 'Date', 'disciple_tools' )?> <span class="required-style-example">*</span>
-          </div> -->
 
           <?php render_field_for_display( 'date', $post_settings["fields"], $dt_post ) ?>
       <?php
@@ -147,6 +165,7 @@ class DT_Meetings{
             ?>
 
             <label class="section-header">
+                <!-- meeting Attendees tile -->
                 <?php esc_html_e( 'Attendees', 'disciple_tools' )?>
             </label>
             <!-- <?php render_field_for_display( 'date', $post_settings["fields"], $dt_post ) ?> -->
@@ -155,22 +174,23 @@ class DT_Meetings{
             <?php render_field_for_display( 'contacts', $post_settings["fields"], $dt_post ) ?>
 
         <?php }
-
-        if ($section == "groups" && $post_type === "meetings"){
-            $post_type = get_post_type();
-            $post_settings = apply_filters( "dt_get_post_type_settings", [], $post_type );
-            $dt_post = DT_Posts::get_post( $post_type, get_the_ID() );
+        //
+        // if ($section == "groups" && $post_type === "meetings"){
+        //     $post_type = get_post_type();
+        //     $post_settings = apply_filters( "dt_get_post_type_settings", [], $post_type );
+        //     $dt_post = DT_Posts::get_post( $post_type, get_the_ID() );
             ?>
 
-            <label class="section-header">
-                <?php esc_html_e( 'Groups', 'disciple_tools' )?>
-            </label>
+            <!-- <label class="section-header"> -->
+                <!-- meeting Groups tile -->
+                <?php //esc_html_e( 'Groups', 'disciple_tools' )?>
+            <!-- </label> -->
 
-            <?php render_field_for_display( 'group_count', $post_settings["fields"], $dt_post ) ?>
+            <?php //render_field_for_display( 'group_count', $post_settings["fields"], $dt_post ) ?>
 
-            <?php render_field_for_display( 'groups', $post_settings["fields"], $dt_post ) ?>
+            <?php // render_field_for_display( 'groups', $post_settings["fields"], $dt_post ) ?>
 
-        <?php }
+        <?php //}
 
         if ($section == "meetings" && $post_type === "contacts"){
             $post_type = get_post_type();
@@ -178,7 +198,7 @@ class DT_Meetings{
             $dt_post = DT_Posts::get_post( $post_type, get_the_ID() );
             ?>
 
-            <label class="section-header">
+            <label class="section-header"><!-- contact tile -->
                 <?php esc_html_e( 'Meetings', 'disciple_tools' )?>
             </label>
 
@@ -186,18 +206,18 @@ class DT_Meetings{
 
         <?php }
 
-        if ($section == "meetings" && $post_type === "groups"){
-            $post_type = get_post_type();
-            $post_settings = apply_filters( "dt_get_post_type_settings", [], $post_type );
-            $dt_post = DT_Posts::get_post( $post_type, get_the_ID() );
+        // if ($section == "meetings" && $post_type === "groups"){
+        //     $post_type = get_post_type();
+        //     $post_settings = apply_filters( "dt_get_post_type_settings", [], $post_type );
+        //     $dt_post = DT_Posts::get_post( $post_type, get_the_ID() );
             ?>
 
-            <label class="section-header">
-                <?php esc_html_e( 'Meetings', 'disciple_tools' )?>
-            </label>
+            <!-- <label class="section-header"><!-- group tile -->
+                <?php // esc_html_e( 'Meetings ', 'disciple_tools' )?>
+            <!-- </label> -->
 
-            <?php render_field_for_display( 'meetings', $post_settings["fields"], $dt_post ) ?>
+            <?php //render_field_for_display( 'meetings', $post_settings["fields"], $dt_post ) ?>
 
-        <?php }
+        <?php //}
     }
 }

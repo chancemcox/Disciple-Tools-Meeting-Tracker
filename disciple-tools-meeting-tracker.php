@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Meeting Tracker
- * Plugin URI: https://github.com/DiscipleTools/disciple-tools-starter-plugin
+ * Plugin URI: https://github.com/DiscipleTools/disciple-tools-meeting-tracker
  * Description: Disciple Tools - Meeting Tracker
  * Version:  0.1.0
  * Author URI: https://github.com/DiscipleTools
- * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-starter-plugin
+ * GitHub Plugin URI: https://github.com/DiscipleTools/disciple-tools-meeting-tracker
  * Requires at least: 4.7.0
  * (Requires 4.7+ because of the integration of the REST API at 4.7 and the security requirements of this milestone version.)
  * Tested up to: 4.9
@@ -26,7 +26,7 @@
 /**
  * Refactoring (renaming) this plugin as your own:
  * 1. Refactor all occurrences of the name DT_Starter, dt_starter, dt-meetings and Starter Plugin with you're own
- * name for the `disciple-tools-starter-plugin.php and menu-and-tabs.php files.
+ * name for the `disciple-tools-meeting-tracker.php and menu-and-tabs.php files.
  * 2. Update the README.md and LICENSE
  * 3. Update the default.pot file if you intend to make your plugin multilingual. Use a tool like POEdit
  * 4. Change the translation domain to in the phpcs.xml your plugin's domain: @todo
@@ -199,11 +199,11 @@ class DT_Meetings_Plugin {
              * @see https://github.com/DiscipleTools/disciple-tools-version-control/wiki/How-to-Update-the-Starter-Plugin
              */
 //            @todo enable this section with your own hosted file
-//            $hosted_json = "https://raw.githubusercontent.com/DiscipleTools/disciple-tools-version-control/master/disciple-tools-starter-plugin-version-control.json";
+//            $hosted_json = "https://raw.githubusercontent.com/DiscipleTools/disciple-tools-version-control/master/disciple-tools-meeting-tracker-version-control.json";
 //            Puc_v4_Factory::buildUpdateChecker(
 //                $hosted_json,
 //                __FILE__,
-//                'disciple-tools-starter-plugin'
+//                'disciple-tools-meeting-tracker'
 //            );
         }
 
